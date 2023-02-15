@@ -30,38 +30,8 @@ class MakeCrudCommand extends Command {
    * @return void
    */
   public function handle(): void {
-    // For each configured file
-    foreach ($this->getFilesToCreate() as $fileEntry) {
-      $file = $fileEntry["src"];
-      // get destination folder path
-      $path = $this->getSourceFilePath($fileEntry["dest"], ["{resource}" => $this->argument("resource")]);
-      
-      // Create destination folder
-      $this->makeDirectory(dirname($path));
-      
-      // Create the file with its content
-      $contents = $this->getCompiledFile($file, $fileEntry["variables"]);
-      
-      // If file not exists, saves it, otherwise inform that file already exists
-      $this->storeFile($path, $contents);
-    }
+  
   }
   
-  /**
-   * Get the files to create
-   *
-   * @return array
-   */
-  private function getFilesToCreate(): array {
-    return [
-      [
-        "src"       => "resources/views/index.blade.php",
-        "dest"      => "resources/views/{resource}/index.blade.php",
-        "variables" => [
-          "pageTitle" => "List of {$this->argument('resource')}",
-        ]
-      ]
-    ];
-  }
   
 }

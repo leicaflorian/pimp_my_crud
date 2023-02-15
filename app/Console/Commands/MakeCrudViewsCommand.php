@@ -40,24 +40,24 @@ class MakeCrudViewsCommand extends Command {
    *
    * @return int
    */
-  public function handle() {
-    // For each configured file
+  public function handle() {// For each configured file
     foreach ($this->getFilesToCreate() as $fileEntry) {
       $file = $fileEntry["src"];
       // get destination folder path
       $path = $this->getSourceFilePath($fileEntry["dest"], ["{resource}" => $this->argument("resource")]);
-      
+    
       // Create destination folder
       $this->makeDirectory(dirname($path));
-      
+    
       // Create the file with its content
       $contents = $this->getCompiledFile($file, $fileEntry["variables"]);
-      
+    
       // If file not exists, saves it, otherwise inform that file already exists
       $this->storeFile($path, $contents);
     }
-    
+  
     return Command::SUCCESS;
+    
   }
   
   /**

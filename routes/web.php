@@ -18,3 +18,4 @@ Route::get('/', function () {
 });
 
 Route::resource('posts', \App\Http\Controllers\PostController::class);
+Route::resource('users', \App\Http\Controllers\UserController::class);

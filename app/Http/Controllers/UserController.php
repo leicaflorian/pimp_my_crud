@@ -1,21 +1,21 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class PostController extends Controller {
+class UserController extends Controller {
   /**
    * Display a listing of the resource.
    *
    * @return View
    */
   public function index(): View {
-    $posts = Post::all();
+    $users = User::all();
     
-    return view('posts.index', compact("posts"));
+    return view('users.index', compact("users"));
   }
   
   /**
@@ -24,7 +24,7 @@ class PostController extends Controller {
    * @return View
    */
   public function create(): View {
-    return view('posts.create');
+    return view('users.create');
   }
   
   /**
@@ -36,59 +36,59 @@ class PostController extends Controller {
    */
   public function store(Request $request): RedirectResponse {
     $data = $request->all();
-    $post = Post::create($data);
+    $user = User::create($data);
     
-    return redirect()->route('posts.show', $post->id);
+    return redirect()->route('users.show', $user->id);
   }
   
   /**
    * Display the specified resource.
    *
-   * @param Post $post
+   * @param User $user
    *
    * @return View
    */
-  public function show(Post $post): View {
-    return view('posts.show', compact("post"));
+  public function show(User $user): View {
+    return view('users.show', compact("user"));
   }
   
   /**
    * Show the form for editing the specified resource.
    *
-   * @param  Post  $post
+   * @param  User  $user
    *
    * @return View
    */
-  public function edit(Post $post): View {
-    return view('posts.edit', compact("post"));
+  public function edit(User $user): View {
+    return view('users.edit', compact("user"));
   }
   
   /**
    * Update the specified resource in storage.
    *
    * @param  Request $request
-   * @param  Post $post
+   * @param  User $user
    *
    * @return RedirectResponse
    */
-  public function update(Request $request, Post $post): RedirectResponse {
+  public function update(Request $request, User $user): RedirectResponse {
     $data = $request->all();
     
-    Post::update($data);
+    User::update($data);
     
-    return redirect()->route('posts.show', $post->id);
+    return redirect()->route('users.show', $user->id);
   }
   
   /**
    * Remove the specified resource from storage.
    *
-   * @param  Post  $post
+   * @param  User  $user
    *
    * @return RedirectResponse
    */
-  public function destroy(Post $post): RedirectResponse {
-    $post->destroy();
+  public function destroy(User $user): RedirectResponse {
+    $user->destroy();
     
-    return redirect()->route('posts.index');
+    return redirect()->route('users.index');
   }
 }
