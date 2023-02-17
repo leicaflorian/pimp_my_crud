@@ -24,7 +24,7 @@ trait WithStubHandling {
    *
    */
   public function getStubPath($file) {
-    return __DIR__ . "/../../stubs/$file";
+    return __DIR__ . "/../stubs/$file";
   }
   
   /**
