@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Providers;
+namespace LeicaFlorian\PimpMyCrud;
 
-use App\Console\Commands\MakeCrudCommand;
-use App\Console\Commands\MakeCrudControllerCommand;
-use App\Console\Commands\MakeCrudViewsCommand;
 use Illuminate\Support\ServiceProvider;
+use LeicaFlorian\PimpMyCrud\Commands\MakeCrudControllerCommand;
+use LeicaFlorian\PimpMyCrud\Commands\MakeCrudViewsCommand;
 
 class PimpMyCrudServiceProvider extends ServiceProvider {
   /**

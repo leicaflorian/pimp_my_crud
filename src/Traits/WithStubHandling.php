@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace LeicaFlorian\PimpMyCrud\Traits;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Pluralizer;

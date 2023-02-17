@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Console\Commands;
+namespace LeicaFlorian\PimpMyCrud\Commands;
 
-use App\Models\Post;
-use App\Traits\WithStubHandling;
-use App\Traits\WithTableAnalyzer;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Pluralizer;
 use Illuminate\Support\Str;
+use LeicaFlorian\PimpMyCrud\Traits\WithStubHandling;
+use LeicaFlorian\PimpMyCrud\Traits\WithTableAnalyzer;
 
 class MakeCrudViewsCommand extends Command {
   use WithStubHandling, WithTableAnalyzer;

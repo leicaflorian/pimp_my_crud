@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Traits;
+namespace LeicaFlorian\PimpMyCrud\Traits;
 
-use App\Models\Post;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
@@ -82,5 +81,3 @@ trait WithTableAnalyzer {
     return $toReturn;
   }
 }
-
-use Doctrine\DBAL\Schema\Column;
