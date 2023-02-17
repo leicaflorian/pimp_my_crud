@@ -17,7 +17,7 @@
 
       <div class="card-body">
 
-        <form action="{{ route('{{ resource }}.create') }}" method="POST"
+        <form action="{{ route('{{ resource }}.store') }}" method="POST"
               enctype="multipart/form-data">
           @csrf()
 

@@ -19,4 +19,4 @@ yarn-error.log
 
 /app/Models/Category.php
 /app/Models/Post.php
-/app/views
+/resources
