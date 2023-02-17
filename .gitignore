@@ -16,3 +16,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+/app/Models/Category.php
+/app/Models/Post.php
+/app/views

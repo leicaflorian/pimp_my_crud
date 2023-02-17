@@ -5,6 +5,7 @@ use {{ modelNamespace }};
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+{{ extraImport }}
 
 class {{ modelName }}Controller extends Controller {
   /**
@@ -24,7 +25,8 @@ class {{ modelName }}Controller extends Controller {
    * @return View
    */
   public function create(): View {
-    return view('{{ resource }}.create');
+    {{ extraQuery }}
+    return view('{{ resource }}.create', [{{ extraViewData }}]);
   }
   
   /**
@@ -60,7 +62,11 @@ class {{ modelName }}Controller extends Controller {
    * @return View
    */
   public function edit({{ modelName }} ${{ resourceSingular }}): View {
-    return view('{{ resource }}.edit', compact("{{ resourceSingular }}"));
+    {{ extraQuery }}
+    return view('{{ resource }}.edit', [
+      "{{ resourceSingular }}" => ${{ resourceSingular }},
+      {{ extraViewData }}
+    ]);
   }
   
   /**
@@ -74,7 +80,7 @@ class {{ modelName }}Controller extends Controller {
   public function update(Request $request, {{ modelName }} ${{ resourceSingular }}): RedirectResponse {
     $data = $request->all();
     
-    {{ modelName }}::update($data);
+    ${{ resourceSingular }}->update($data);
     
     return redirect()->route('{{ resource }}.show', ${{ resourceSingular }}->id);
   }

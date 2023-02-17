@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "leicaflorian/pimp_my_crud",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "Artisan commands for creating CRUD views and controller.",
+    "keywords": ["crud", "laravel", "resource"],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",

@@ -5,6 +5,7 @@ use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\Category;
 
 class PostController extends Controller {
   /**
@@ -24,7 +25,9 @@ class PostController extends Controller {
    * @return View
    */
   public function create(): View {
-    return view('posts.create');
+    $categories = Category::all();
+
+    return view('posts.create', ['categories' => $categories]);
   }
   
   /**
@@ -60,7 +63,12 @@ class PostController extends Controller {
    * @return View
    */
   public function edit(Post $post): View {
-    return view('posts.edit', compact("post"));
+    $categories = Category::all();
+
+    return view('posts.edit', [
+      "post" => $post,
+      'categories' => $categories
+    ]);
   }
   
   /**
@@ -74,7 +82,7 @@ class PostController extends Controller {
   public function update(Request $request, Post $post): RedirectResponse {
     $data = $request->all();
     
-    Post::update($data);
+    $post->update($data);
     
     return redirect()->route('posts.show', $post->id);
   }

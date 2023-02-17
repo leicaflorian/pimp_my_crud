@@ -85,13 +85,13 @@ trait WithStubHandling {
   }
   
   
-  protected function storeFile($path, $contents) {
+  protected function storeFile($path, $contents, $force) {
     $files = new Filesystem();
-      $files->put($path, $contents);
     
     // If file not exists, saves it, otherwise inform that file already exists
-    if ( !$files->exists($path)) {
+    if ( !$files->exists($path) || $force) {
       $this->info("File : {$path} created");
+      $files->put($path, $contents);
     } else {
       $this->info("File : {$path} already exits");
     }
