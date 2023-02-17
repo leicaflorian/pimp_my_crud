@@ -2,7 +2,14 @@
 
 Laravel artisan command for easily generating CRUD views and controller with all necessary code.
 
-[TOC]
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Views](#views)
+    - [Arguments](#arguments)
+    - [Options](#options)
+  - [Controller](#controller)
+    - [Arguments](#arguments-1)
+    - [Options](#options-1)
 
 ## Installation
 
