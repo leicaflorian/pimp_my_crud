@@ -4,6 +4,7 @@ namespace LeicaFlorian\PimpMyCrud\Traits;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Pluralizer;
+use Illuminate\Support\Str;
 
 trait WithStubHandling {
   /**
@@ -14,7 +15,7 @@ trait WithStubHandling {
    * @return string
    */
   public function getSingularClassName($name) {
-    return ucwords(Pluralizer::singular($name));
+    return  ucwords(Str::camel(Pluralizer::singular($name)));
   }
   
   /**
