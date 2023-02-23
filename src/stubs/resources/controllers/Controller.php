@@ -6,16 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 {{ extraImport }}
 
-class {{ modelName }}Controller extends Controller {
+class {{ controllerName }}Controller extends Controller {
   /**
    * Display a listing of the resource.
    *
    * @return View
    */
   public function index(): View {
-    ${{ resource }} = {{ modelName }}::all();
+    ${{ varNamePlural }} = {{ modelName }}::all();
     
-    return view('{{ routePrefix }}{{ resource }}.index', compact("{{ resource }}"));
+    return view('{{ routePrefix }}{{ resource }}.index', compact("{{ varNamePlural }}"));
   }
   
   /**
@@ -37,9 +37,9 @@ class {{ modelName }}Controller extends Controller {
    */
   public function store(Request $request): RedirectResponse {
     $data = $request->all();
-    ${{ resourceSingular }} = {{ modelName }}::create($data);
+    ${{ varName }} = {{ modelName }}::create($data);
     
-    return redirect()->route('{{ routePrefix }}{{ resource }}.show', ${{ resourceSingular }}->id);
+    return redirect()->route('{{ routePrefix }}{{ resource }}.show', ${{ varName }}->id);
   }
   
   /**
@@ -49,8 +49,8 @@ class {{ modelName }}Controller extends Controller {
    *
    * @return View
    */
-  public function show({{ modelName }} ${{ resourceSingular }}): View {
-    return view('{{ routePrefix }}{{ resource }}.show', compact("{{ resourceSingular }}"));
+  public function show({{ modelName }} ${{ varName }}): View {
+    return view('{{ routePrefix }}{{ resource }}.show', compact("{{ varName }}"));
   }
   
   /**
@@ -60,10 +60,10 @@ class {{ modelName }}Controller extends Controller {
    *
    * @return View
    */
-  public function edit({{ modelName }} ${{ resourceSingular }}): View {
+  public function edit({{ modelName }} ${{ varName }}): View {
     {{ extraQuery }}
     return view('{{ routePrefix }}{{ resource }}.edit', [
-      "{{ resourceSingular }}" => ${{ resourceSingular }},
+      "{{ varName }}" => ${{ varName }},
       {{ extraViewData }}
     ]);
   }
@@ -76,12 +76,12 @@ class {{ modelName }}Controller extends Controller {
    *
    * @return RedirectResponse
    */
-  public function update(Request $request, {{ modelName }} ${{ resourceSingular }}): RedirectResponse {
+  public function update(Request $request, {{ modelName }} ${{ varName }}): RedirectResponse {
     $data = $request->all();
     
-    ${{ resourceSingular }}->update($data);
+    ${{ varName }}->update($data);
     
-    return redirect()->route('{{ routePrefix }}{{ resource }}.show', ${{ resourceSingular }}->id);
+    return redirect()->route('{{ routePrefix }}{{ resource }}.show', ${{ varName }}->id);
   }
   
   /**
@@ -91,8 +91,8 @@ class {{ modelName }}Controller extends Controller {
    *
    * @return RedirectResponse
    */
-  public function destroy({{ modelName }} ${{ resourceSingular }}): RedirectResponse {
-    ${{ resourceSingular }}->destroy();
+  public function destroy({{ modelName }} ${{ varName }}): RedirectResponse {
+    ${{ varName }}->destroy();
     
     return redirect()->route('{{ routePrefix }}{{ resource }}.index');
   }

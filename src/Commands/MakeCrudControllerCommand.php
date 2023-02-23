@@ -18,7 +18,9 @@ class MakeCrudControllerCommand extends Command {
    * @var string
    */
   protected $signature = 'pmc:controller {resource : Name of the resource, in lowercase, plural}
-                          {--force : Overwrite existing files}';
+                          {--force : Overwrite existing files}
+                          {--model= : Manually specify the model name}
+                          {--controller= : Manually specify the controller name}';
   
   /**
    * The console command description.
@@ -70,27 +72,32 @@ class MakeCrudControllerCommand extends Command {
    */
   private function getFilesToCreate($resource, $routePrefix): array {
     $resourceSingular = Pluralizer::singular($resource);
-    $modelName        = $this->getSingularClassName($resource);
+    $modelName        = $this->option("model") ?? $this->getSingularClassName($resource);
+    $controllerName   = $this->option("controller") ?? $this->getSingularClassName($resource);
     $model            = "App\\Models\\{$modelName}";
     $destPath         = $routePrefix ? collect(explode(".", $routePrefix))
       ->reduce(function ($acc, $str): Collection {
         if ($str) {
           $acc->push(ucfirst($str));
         }
-        
+      
         return $acc;
       }, collect([]))
       ->join("/") : "";
     
+    if (Str::contains(strtolower($controllerName), "controller")) {
+      $controllerName = Str::replace(["Controller", "controller"], "", $controllerName);
+    }
+  
     if ( !class_exists($model)) {
       $this->error("Model {$model} does not exists");
-      
+    
       return [];
     }
-    
+  
     $columns        = $this->getTableColumns((new $model));
     $foreignColumns = $columns->filter(fn($column) => $column["foreign"] && $column["fillable"]);
-    
+  
     $extraImport   = [];
     $extraQuery    = [];
     $extraViewData = [];
@@ -116,12 +123,15 @@ class MakeCrudControllerCommand extends Command {
     return [
       [
         "src"       => "resources/controllers/Controller.php",
-        "dest"      => "app/Http/Controllers/" . ($destPath ? $destPath . "/" : "") . "{$modelName}Controller.php",
+        "dest"      => "app/Http/Controllers/" . ($destPath ? $destPath . "/" : "") . "{$controllerName}Controller.php",
         "variables" => [
+          "varName"             => Str::camel($resourceSingular),
+          "varNamePlural"       => Str::camel($resource),
           "resource"            => $resource,
           "resourceSingular"    => $resourceSingular,
           "routePrefix"         => $routePrefix,
-          "controllerNamespace" => $destPath ? Str::replace("/", "\\", $destPath) : "",
+          "controllerNamespace" => $destPath ? "\\" . Str::replace("/", "\\", $destPath) : "",
+          "controllerName"      => $controllerName,
           "modelName"           => $modelName,
           "modelNamespace"      => $model,
           "columns"             => $columns,
