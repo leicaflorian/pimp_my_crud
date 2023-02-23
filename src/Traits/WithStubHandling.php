@@ -103,15 +103,26 @@ trait WithStubHandling {
     $resourceName   = array_pop($resourcePieces);
     $resourcePath   = implode("/", $resourcePieces);
     $routePrefix    = implode(".", $resourcePieces);
-    
+  
     if ($routePrefix) {
       $routePrefix .= ".";
     }
+  
+    return [
+      'name'   => $resourceName,
+      'path'   => $resourcePath,
+      'prefix' => $routePrefix,
+    ];
+  }
+  
+  protected function getResourceNameVariants($resourceName) {
+    $singular = Pluralizer::singular($resourceName);
     
     return [
-      'name' => $resourceName,
-      'path' => $resourcePath,
-      'prefix'  => $routePrefix,
+      "varName"          => Str::camel($singular),
+      "varNamePlural"    => Str::camel($resourceName),
+      "resource"         => $resourceName,
+      "resourceSingular" => $singular,
     ];
   }
 }

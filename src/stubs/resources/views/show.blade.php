@@ -6,8 +6,8 @@
   <div class="bg-light border-bottom mb-4">
     <div class="container">
       <div class="nav justify-content-center">
-        <a class="nav-link" href="{{ route('{{ routePrefix }}{{ resource }}.edit', ${{ resourceSingular }}->id) }}">Edit</a>
-        <a class="nav-link" href="{{ route('{{ routePrefix }}{{ resource }}.destroy', ${{ resourceSingular }}->id) }}">Delete</a>
+        <a class="nav-link" href="{{ route('{{ routePrefix }}{{ resource }}.edit', ${{ varName }}->id) }}">Edit</a>
+        <a class="nav-link" href="{{ route('{{ routePrefix }}{{ resource }}.destroy', ${{ varName }}->id) }}">Delete</a>
       </div>
     </div>
   </div>

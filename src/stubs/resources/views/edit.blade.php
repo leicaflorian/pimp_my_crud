@@ -17,7 +17,7 @@
 
       <div class="card-body">
 
-        <form action="{{ route('{{ routePrefix }}{{ resource }}.update', ${{ resourceSingular }}->id) }}" method="POST"
+        <form action="{{ route('{{ routePrefix }}{{ resource }}.update', ${{ varName }}->id) }}" method="POST"
               enctype="multipart/form-data">
           @csrf()
           @method('PUT')

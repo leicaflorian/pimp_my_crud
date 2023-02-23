@@ -105,68 +105,84 @@ class MakeCrudViewsCommand extends Command {
   }
   
   public function getIndexView($resource, $resourceSingular, $columns, $routePrefix) {
+    $resNames = $this->getResourceNameVariants($resource);
+    
     return [
       "src"       => "resources/views/index.blade.php",
       "dest"      => "resources/views/{resource}/index.blade.php",
       "variables" => [
-        "resource"         => $resource,
-        "resourceSingular" => $resourceSingular,
+        "varName"          => $resNames["varName"],
+        "varNamePlural"    => $resNames["varNamePlural"],
+        "resource"         => $resNames["resource"],
+        "resourceSingular" => $resNames["resourceSingular"],
         "routePrefix"      => $routePrefix,
         "pageTitle"        => "List of {$resource}",
         "columns"          => $columns->map(function ($column) {
           $colName = ucfirst(Str::replace('_', ' ', $column['name']));
-          
+    
           return "<th>{$colName}</th>";
         })->implode("\n              "),
-        "rows"             => $columns->map(fn($column) => "<td>{{ \${$resourceSingular}->{$column["name"]} }}</td>")
+        "rows"             => $columns->map(fn($column) => "<td>{{ \${$resNames["varName"]}->{$column["name"]} }}</td>")
           ->implode("\n                ")
       ],
     ];
   }
   
   public function getEditView($resource, $resourceSingular, $columns, $routePrefix) {
+    $resNames = $this->getResourceNameVariants($resource);
+    
     return [
       "src"       => "resources/views/edit.blade.php",
       "dest"      => "resources/views/{resource}/edit.blade.php",
       "variables" => [
-        "resource"         => $resource,
-        "resourceSingular" => $resourceSingular,
+        "varName"          => $resNames["varName"],
+        "varNamePlural"    => $resNames["varNamePlural"],
+        "resource"         => $resNames["resource"],
+        "resourceSingular" => $resNames["resourceSingular"],
         "routePrefix"      => $routePrefix,
-        "pageTitle"        => ucfirst($resourceSingular) . " #\${$resourceSingular}->id | Edit",
-        "title"            => ucfirst($resourceSingular) . " #{{ \${$resourceSingular}->id }} | Edit",
-        "formInputs"       => $this->getUpsertForm($resourceSingular, $columns, true),
+        "pageTitle"        => ucfirst($resourceSingular) . " #\${$resNames["varName"]}->id | Edit",
+        "title"            => ucfirst($resourceSingular) . " #{{ \${$resNames["varName"]}->id }} | Edit",
+        "formInputs"       => $this->getUpsertForm($resNames["varName"], $columns, true),
       ]
     ];
   }
   
   public function getCreateView($resource, $resourceSingular, $columns, $routePrefix) {
+    $resNames = $this->getResourceNameVariants($resource);
+    
     return [
       "src"       => "resources/views/create.blade.php",
       "dest"      => "resources/views/{resource}/create.blade.php",
       "variables" => [
-        "resource"         => $resource,
-        "resourceSingular" => $resourceSingular,
+        "varName"          => $resNames["varName"],
+        "varNamePlural"    => $resNames["varNamePlural"],
+        "resource"         => $resNames["resource"],
+        "resourceSingular" => $resNames["resourceSingular"],
         "routePrefix"      => $routePrefix,
         "pageTitle"        => ucfirst($resource) . " | Create",
-        "formInputs"       => $this->getUpsertForm($resourceSingular, $columns),
+        "formInputs"       => $this->getUpsertForm($resNames["varName"], $columns),
       ]
     ];
   }
   
   public function getShowView($resource, $resourceSingular, $columns, $routePrefix) {
+    $resNames = $this->getResourceNameVariants($resource);
+    
     return [
       "src"       => "resources/views/show.blade.php",
       "dest"      => "resources/views/{resource}/show.blade.php",
       "variables" => [
-        "resource"         => $resource,
-        "resourceSingular" => $resourceSingular,
+        "varName"          => $resNames["varName"],
+        "varNamePlural"    => $resNames["varNamePlural"],
+        "resource"         => $resNames["resource"],
+        "resourceSingular" => $resNames["resourceSingular"],
         "routePrefix"      => $routePrefix,
-        "pageTitle"        => ucfirst($resourceSingular) . " #\${$resourceSingular}->id",
-        "title"            => ucfirst($resourceSingular) . " #{{ \${$resourceSingular}->id }}",
-        "formInputs"       => $columns->reduce(function ($acc, $column) use ($resourceSingular) {
+        "pageTitle"        => ucfirst($resourceSingular) . " #\${$resNames["varName"]}->id",
+        "title"            => ucfirst($resourceSingular) . " #{{ \${$resNames["varName"]}->id }}",
+        "formInputs"       => $columns->reduce(function ($acc, $column) use ($resNames) {
           $colName = ucfirst(Str::replace('_', ' ', $column['name']));
-          
-          $acc->push("<div><strong>{$colName}:</strong> {{ \${$resourceSingular}->{$column['name']} }}</div>");
+    
+          $acc->push("<div><strong>{$colName}:</strong> {{ \${$resNames["varName"]}->{$column['name']} }}</div>");
           
           return $acc;
         }, collect())->implode("\n\n          "),
