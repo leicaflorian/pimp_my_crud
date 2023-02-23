@@ -88,7 +88,7 @@ trait WithStubHandling {
   
   protected function storeFile($path, $contents, $force) {
     $files = new Filesystem();
-    
+  
     // If file not exists, saves it, otherwise inform that file already exists
     if ( !$files->exists($path) || $force) {
       $this->info("File : {$path} created");
@@ -96,5 +96,22 @@ trait WithStubHandling {
     } else {
       $this->info("File : {$path} already exits");
     }
+  }
+  
+  protected function handleResourceArgument($argument): array {
+    $resourcePieces = preg_split("/([\.\/])/", $argument);
+    $resourceName   = array_pop($resourcePieces);
+    $resourcePath   = implode("/", $resourcePieces);
+    $routePrefix    = implode(".", $resourcePieces);
+    
+    if ($routePrefix) {
+      $routePrefix .= ".";
+    }
+    
+    return [
+      'name' => $resourceName,
+      'path' => $resourcePath,
+      'prefix'  => $routePrefix,
+    ];
   }
 }

@@ -1,7 +1,6 @@
 <?php
-namespace App\Http\Controllers;
+namespace App\Http\Controllers{{ controllerNamespace }};
 
-use {{ modelNamespace }};
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,7 +15,7 @@ class {{ modelName }}Controller extends Controller {
   public function index(): View {
     ${{ resource }} = {{ modelName }}::all();
     
-    return view('{{ resource }}.index', compact("{{ resource }}"));
+    return view('{{ routePrefix }}{{ resource }}.index', compact("{{ resource }}"));
   }
   
   /**
@@ -26,7 +25,7 @@ class {{ modelName }}Controller extends Controller {
    */
   public function create(): View {
     {{ extraQuery }}
-    return view('{{ resource }}.create', [{{ extraViewData }}]);
+    return view('{{ routePrefix }}{{ resource }}.create', [{{ extraViewData }}]);
   }
   
   /**
@@ -40,7 +39,7 @@ class {{ modelName }}Controller extends Controller {
     $data = $request->all();
     ${{ resourceSingular }} = {{ modelName }}::create($data);
     
-    return redirect()->route('{{ resource }}.show', ${{ resourceSingular }}->id);
+    return redirect()->route('{{ routePrefix }}{{ resource }}.show', ${{ resourceSingular }}->id);
   }
   
   /**
@@ -51,7 +50,7 @@ class {{ modelName }}Controller extends Controller {
    * @return View
    */
   public function show({{ modelName }} ${{ resourceSingular }}): View {
-    return view('{{ resource }}.show', compact("{{ resourceSingular }}"));
+    return view('{{ routePrefix }}{{ resource }}.show', compact("{{ resourceSingular }}"));
   }
   
   /**
@@ -63,7 +62,7 @@ class {{ modelName }}Controller extends Controller {
    */
   public function edit({{ modelName }} ${{ resourceSingular }}): View {
     {{ extraQuery }}
-    return view('{{ resource }}.edit', [
+    return view('{{ routePrefix }}{{ resource }}.edit', [
       "{{ resourceSingular }}" => ${{ resourceSingular }},
       {{ extraViewData }}
     ]);
@@ -82,7 +81,7 @@ class {{ modelName }}Controller extends Controller {
     
     ${{ resourceSingular }}->update($data);
     
-    return redirect()->route('{{ resource }}.show', ${{ resourceSingular }}->id);
+    return redirect()->route('{{ routePrefix }}{{ resource }}.show', ${{ resourceSingular }}->id);
   }
   
   /**
@@ -95,6 +94,6 @@ class {{ modelName }}Controller extends Controller {
   public function destroy({{ modelName }} ${{ resourceSingular }}): RedirectResponse {
     ${{ resourceSingular }}->destroy();
     
-    return redirect()->route('{{ resource }}.index');
+    return redirect()->route('{{ routePrefix }}{{ resource }}.index');
   }
 }

@@ -50,14 +50,10 @@ class MakeCrudViewsCommand extends Command {
       $this->info("Only \"{$only}\" views will be created");
     }
   
-    $resourcePieces = preg_split("/([\.\/])/", $this->argument("resource"));
-    $resourceName   = array_pop($resourcePieces);
-    $resourcePath   = implode("/", $resourcePieces);
-    $routePrefix    = implode(".", $resourcePieces);
-  
-    if ($routePrefix) {
-      $routePrefix .= ".";
-    }
+    $resourceData = $this->handleResourceArgument($this->argument("resource"));
+    $resourceName   = $resourceData["name"];
+    $resourcePath   = $resourceData["path"];
+    $routePrefix    = $resourceData["prefix"];
   
     // For each configured file
     foreach ($this->getFilesToCreate($resourceName, $only, $routePrefix) as $fileEntry) {

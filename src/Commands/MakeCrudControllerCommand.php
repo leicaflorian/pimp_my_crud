@@ -3,7 +3,9 @@
 namespace LeicaFlorian\PimpMyCrud\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Pluralizer;
+use Illuminate\Support\Str;
 use LeicaFlorian\PimpMyCrud\Traits\WithStubHandling;
 use LeicaFlorian\PimpMyCrud\Traits\WithTableAnalyzer;
 
@@ -36,19 +38,24 @@ class MakeCrudControllerCommand extends Command {
    */
   public function handle(): int {
     $force = $this->option("force");
-    
+  
+    $resourceData = $this->handleResourceArgument($this->argument("resource"));
+    $resourceName = $resourceData["name"];
+    $resourcePath = $resourceData["path"];
+    $routePrefix  = $resourceData["prefix"];
+  
     // For each configured file
-    foreach ($this->getFilesToCreate() as $fileEntry) {
+    foreach ($this->getFilesToCreate($resourceName, $routePrefix) as $fileEntry) {
       $file = $fileEntry["src"];
       // get destination folder path
-      $path = $this->getSourceFilePath($fileEntry["dest"], ["{resource}" => $this->argument("resource")]);
-      
+      $path = $this->getSourceFilePath($fileEntry["dest"], ["{resource}" => implode("/", [$resourcePath, $resourceName])]);
+    
       // Create destination folder
       $this->makeDirectory(dirname($path));
-      
+    
       // Create the file with its content
       $contents = $this->getCompiledFile($file, $fileEntry["variables"]);
-      
+    
       // If file not exists, saves it, otherwise inform that file already exists
       $this->storeFile($path, $contents, $force);
     }
@@ -61,11 +68,19 @@ class MakeCrudControllerCommand extends Command {
    *
    * @return array
    */
-  private function getFilesToCreate(): array {
-    $resource         = $this->argument('resource');
+  private function getFilesToCreate($resource, $routePrefix): array {
     $resourceSingular = Pluralizer::singular($resource);
     $modelName        = $this->getSingularClassName($resource);
     $model            = "App\\Models\\{$modelName}";
+    $destPath         = $routePrefix ? collect(explode(".", $routePrefix))
+      ->reduce(function ($acc, $str): Collection {
+        if ($str) {
+          $acc->push(ucfirst($str));
+        }
+        
+        return $acc;
+      }, collect([]))
+      ->join("/") : "";
     
     if ( !class_exists($model)) {
       $this->error("Model {$model} does not exists");
@@ -79,6 +94,12 @@ class MakeCrudControllerCommand extends Command {
     $extraImport   = [];
     $extraQuery    = [];
     $extraViewData = [];
+    
+    if ($destPath) {
+      $extraImport[] = "use App\\Http\\Controllers\\Controller;";
+    }
+    
+    $extraImport[] = "use $model;";
     
     // If there are foreign columns, add them to the imports, queries and view data
     if ($foreignColumns->count() > 0) {
@@ -95,16 +116,18 @@ class MakeCrudControllerCommand extends Command {
     return [
       [
         "src"       => "resources/controllers/Controller.php",
-        "dest"      => "app/Http/Controllers/{$modelName}Controller.php",
+        "dest"      => "app/Http/Controllers/" . ($destPath ? $destPath . "/" : "") . "{$modelName}Controller.php",
         "variables" => [
-          "resource"         => $resource,
-          "resourceSingular" => $resourceSingular,
-          "modelName"        => $modelName,
-          "modelNamespace"   => $model,
-          "columns"          => $columns,
-          "extraImport"      => implode("\n", $extraImport),
-          "extraQuery"       => implode("\n", $extraQuery),
-          "extraViewData"    => implode(", ", $extraViewData),
+          "resource"            => $resource,
+          "resourceSingular"    => $resourceSingular,
+          "routePrefix"         => $routePrefix,
+          "controllerNamespace" => $destPath ? Str::replace("/", "\\", $destPath) : "",
+          "modelName"           => $modelName,
+          "modelNamespace"      => $model,
+          "columns"             => $columns,
+          "extraImport"         => implode("\n", $extraImport),
+          "extraQuery"          => implode("\n", $extraQuery),
+          "extraViewData"       => implode(", ", $extraViewData),
         ],
       ]
     ];
