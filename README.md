@@ -38,12 +38,14 @@ use the database schema to generate the views and controller.
   show"
 - `--wysiwyg`: Add a wysiwyg editor to the edit and create views
 - `--force`: Overwrite existing views
+- `--model`: Manually specify the model name. [Default: resource name in PascalCase, singular]
 
 ```bash
 php artisan pmc:views posts
 php artisan pmc:views posts --only=index,edit
 php artisan pmc:views posts --only=index,edit --force
 php artisan pmc:views posts --wysiwyg --force
+php artisan pmc:views language-lines --model=Language
 ```
 
 ### Controller
@@ -57,8 +59,12 @@ php artisan pmc:views posts --wysiwyg --force
 #### Options
 
 - `--force`: Overwrite existing controller
+- `--model`: Manually specify the model name. [Default: resource name in PascalCase, singular]
+- `--controller`: Manually specify the controller name. [Default: resource name in PascalCase, singular, ending with "Controller"]
 
 ```bash
 php artisan pmc:controller posts
 php artisan pmc:controller posts --force
+php artisan pmc:controller language-lines --model=Language 
+php artisan pmc:controller language-lines --controller=Language 
 ```
