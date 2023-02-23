@@ -27,6 +27,7 @@ class MakeCrudViewsCommand extends Command {
   protected $signature = 'pmc:views {resource : Name of the resource, in lowercase, plural}
                           {--force : Overwrite existing files}
                           {--only= : Only create the specified views, separated by comma. Available values are "index", "edit", "create" and "show"}
+                          {--model= : Manually specify the model name}
                           {--wysiwyg : Add wysiwyg editor to the form}';
   
   /**
@@ -34,13 +35,7 @@ class MakeCrudViewsCommand extends Command {
    *
    * @var string
    */
-  protected $description = 'Create all CRUD views for the specified resource.
-  Example:
-    php artisan pmc:views posts
-    php artisan pmc:views posts --only=index,edit
-    php artisan pmc:views posts --only=index,edit --force
-    php artisan pmc:views posts --wysiwyg --force
-    ';
+  protected $description = 'Create all CRUD views for the specified resource.';
   
   /**
    * Execute the console command.
@@ -50,23 +45,33 @@ class MakeCrudViewsCommand extends Command {
   public function handle() {
     $force = $this->option("force");
     $only  = $this->option("only");
-    
+  
     if ($only) {
       $this->info("Only \"{$only}\" views will be created");
     }
-    
+  
+    $resourcePieces = preg_split("/([\.\/])/", $this->argument("resource"));
+    $resourceName   = array_pop($resourcePieces);
+    $resourcePath   = implode("/", $resourcePieces);
+    $routePrefix    = implode(".", $resourcePieces);
+  
+    if ($routePrefix) {
+      $routePrefix .= ".";
+    }
+  
     // For each configured file
-    foreach ($this->getFilesToCreate($only) as $fileEntry) {
+    foreach ($this->getFilesToCreate($resourceName, $only, $routePrefix) as $fileEntry) {
       $file = $fileEntry["src"];
+    
       // get destination folder path
-      $path = $this->getSourceFilePath($fileEntry["dest"], ["{resource}" => $this->argument("resource")]);
-      
+      $path = $this->getSourceFilePath($fileEntry["dest"], ["{resource}" => implode("/", [$resourcePath, $resourceName])]);
+    
       // Create destination folder
       $this->makeDirectory(dirname($path));
-      
+    
       // Create the file with its content
       $contents = $this->getCompiledFile($file, $fileEntry["variables"]);
-      
+    
       // If file not exists, saves it, otherwise inform that file already exists
       $this->storeFile($path, $contents, $force);
     }
@@ -80,14 +85,13 @@ class MakeCrudViewsCommand extends Command {
    *
    * @return array
    */
-  private function getFilesToCreate(string $only = null): array {
+  private function getFilesToCreate(string $resource, string $only = null, string $routePrefix = null): array {
     if ($only) {
       $only = explode(",", $only);
     }
     
-    $resource         = $this->argument('resource');
     $resourceSingular = Pluralizer::singular($resource);
-    $modelName        = $this->getSingularClassName($resource);
+    $modelName        = $this->option("model") ?? $this->getSingularClassName($resource);
     $model            = "App\\Models\\{$modelName}";
     
     if ( !class_exists($model)) {
@@ -100,18 +104,19 @@ class MakeCrudViewsCommand extends Command {
     
     return collect(["index", "edit", "create", "show"])
       ->filter(fn($view) => !$only || in_array($view, $only))
-      ->map(fn($view) => $this->{"get" . ucfirst($view) . "View"}($resource, $resourceSingular, $columns))
+      ->map(fn($view) => $this->{"get" . ucfirst($view) . "View"}($resource, $resourceSingular, $columns, $routePrefix))
       ->toArray();
   }
   
-  public function getIndexView($resource, $resourceSingular, $columns) {
+  public function getIndexView($resource, $resourceSingular, $columns, $routePrefix) {
     return [
       "src"       => "resources/views/index.blade.php",
       "dest"      => "resources/views/{resource}/index.blade.php",
       "variables" => [
         "resource"         => $resource,
         "resourceSingular" => $resourceSingular,
-        "pageTitle"        => "List of {$this->argument('resource')}",
+        "routePrefix"      => $routePrefix,
+        "pageTitle"        => "List of {$resource}",
         "columns"          => $columns->map(function ($column) {
           $colName = ucfirst(Str::replace('_', ' ', $column['name']));
           
@@ -123,13 +128,14 @@ class MakeCrudViewsCommand extends Command {
     ];
   }
   
-  public function getEditView($resource, $resourceSingular, $columns) {
+  public function getEditView($resource, $resourceSingular, $columns, $routePrefix) {
     return [
       "src"       => "resources/views/edit.blade.php",
       "dest"      => "resources/views/{resource}/edit.blade.php",
       "variables" => [
         "resource"         => $resource,
         "resourceSingular" => $resourceSingular,
+        "routePrefix"      => $routePrefix,
         "pageTitle"        => ucfirst($resourceSingular) . " #\${$resourceSingular}->id | Edit",
         "title"            => ucfirst($resourceSingular) . " #{{ \${$resourceSingular}->id }} | Edit",
         "formInputs"       => $this->getUpsertForm($resourceSingular, $columns, true),
@@ -137,26 +143,28 @@ class MakeCrudViewsCommand extends Command {
     ];
   }
   
-  public function getCreateView($resource, $resourceSingular, $columns) {
+  public function getCreateView($resource, $resourceSingular, $columns, $routePrefix) {
     return [
       "src"       => "resources/views/create.blade.php",
       "dest"      => "resources/views/{resource}/create.blade.php",
       "variables" => [
         "resource"         => $resource,
         "resourceSingular" => $resourceSingular,
+        "routePrefix"      => $routePrefix,
         "pageTitle"        => ucfirst($resource) . " | Create",
         "formInputs"       => $this->getUpsertForm($resourceSingular, $columns),
       ]
     ];
   }
   
-  public function getShowView($resource, $resourceSingular, $columns) {
+  public function getShowView($resource, $resourceSingular, $columns, $routePrefix) {
     return [
       "src"       => "resources/views/show.blade.php",
       "dest"      => "resources/views/{resource}/show.blade.php",
       "variables" => [
         "resource"         => $resource,
         "resourceSingular" => $resourceSingular,
+        "routePrefix"      => $routePrefix,
         "pageTitle"        => ucfirst($resourceSingular) . " #\${$resourceSingular}->id",
         "title"            => ucfirst($resourceSingular) . " #{{ \${$resourceSingular}->id }}",
         "formInputs"       => $columns->reduce(function ($acc, $column) use ($resourceSingular) {
