@@ -30,7 +30,7 @@ use the database schema to generate the views and controller.
 
 #### Arguments
 
-- `resource`: Name of the resource, in lowercase, plural, e.g. "posts
+- `resource`: Name of the resource, in lowercase, plural, e.g. "posts. This can be nested in a subfolder, e.g. "admin/posts"
 
 #### Options
 
@@ -54,7 +54,7 @@ php artisan pmc:views language-lines --model=Language
 
 #### Arguments
 
-- `resource`: Name of the resource, in lowercase, plural, e.g. "posts
+- `resource`: Name of the resource, in lowercase, plural, e.g. "posts. This can be nested in a subfolder, e.g. "admin/posts"
 
 #### Options
 
